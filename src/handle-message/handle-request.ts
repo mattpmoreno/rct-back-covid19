@@ -13,6 +13,8 @@ export class MessageHandler {
     private dataUtils: DataUtils
   ) {}
   
+  // todo need to add the ability to ask for additional trials (like, subsequent pages of results)
+  
   /**
    * @method
    * @description
