@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "ignorePatterns": ["node_modules/", "dist/", "distLocal/", "e2e/"],
+  "rules": {
+    "no-template-curly-in-string": "warn",
+    "use-isnan": "warn",
+    "array-callback-return": "warn",
+    "block-scoped-var": "warn",
+    "dot-location": ["warn", "property"],
+    "no-fallthrough": "warn",
+    "no-floating-decimal": "warn"
+  }
+}
