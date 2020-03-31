@@ -1,12 +1,30 @@
-import {HashTable, RCTBackCOVID19PhoneNumber, turnIntoPromise} from '../utils';
+import {HashTable, loadJSONData, RCTBackCOVID19PhoneNumber, storeDataAsJSON, turnIntoPromise} from '../utils';
 import {MessageUtils} from "../message-utils";
 
 export class UserDataContainer {
   
+  // Objects that this class maintains
   private userData: HashTable<UserData> = {};
   private badTextData: TrackBadTexts[] = [];
+  // Where we are saving our objects
+  private userDataPath: string = process.env.USER_DATA_PATH;
+  private badTextPath: string = process.env.BAD_TEXT_PATH;
   
-  constructor(private messageUtils: MessageUtils) {}
+  constructor(private messageUtils: MessageUtils) {
+    // Try to load data
+    let userDataTemp = loadJSONData(this.userDataPath);
+    if (userDataTemp !== undefined) {
+      for (let phoneNumber in userDataTemp) {
+        if (Object.prototype.hasOwnProperty.call(userDataTemp, phoneNumber)) {
+          this.userData[phoneNumber] = new UserData(phoneNumber, userDataTemp[phoneNumber]);
+        }
+      }
+    }
+    let badTextDataTemp = loadJSONData(this.badTextPath);
+    if (badTextDataTemp !== undefined) {
+      this.badTextData = userDataTemp;
+    }
+  }
   /**
    * @method
    * @description
@@ -18,6 +36,8 @@ export class UserDataContainer {
     // If we find a new number, then we store it
     if (this.userData[phoneNumber] === undefined) {
       this.userData[phoneNumber] = new UserData(phoneNumber);
+      // Then save the update
+      storeDataAsJSON(this.userData, this.userDataPath);
       // and we send our welcome message
       return this.messageUtils.sendMessage({
         to: phoneNumber, from: RCTBackCOVID19PhoneNumber, body: WelcomeMessage
@@ -37,6 +57,8 @@ export class UserDataContainer {
   **/
   public updateUserZIPAndKeywords(phoneNumber: string, zipCode: string, keywords: string[]): void {
     this.userData[phoneNumber].updateMyselfForNewSearch(zipCode, keywords);
+    // Then save the update
+    storeDataAsJSON(this.userData, this.userDataPath);
   }
   /**
    * @method
@@ -73,9 +95,9 @@ export class UserDataContainer {
    * @return {void}
   **/
   public trackBadTexts(text: string, phoneNumber: string): void {
-    //fortesting
     console.log(`We got a bad text from ${phoneNumber}: ${text}`);
     this.badTextData.push(new TrackBadTexts(text, phoneNumber));
+    storeDataAsJSON(this.badTextData, this.badTextPath);
   }
 }
 
@@ -92,7 +114,11 @@ export class UserData {
   private incrementSearches(): void {this.numberOfSearches++;}
   
   // Initialize with the phone number we are getting requests from
-  constructor(private phoneNumber: string) {}
+  constructor(private phoneNumber: string, data?: any) {
+    if (data !== undefined) {
+      Object.assign(this, data);
+    }
+  }
   
   /****************************************************************************************
   * Methods for updating information on the user data object

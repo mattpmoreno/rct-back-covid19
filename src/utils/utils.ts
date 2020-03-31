@@ -3,6 +3,8 @@
  * @description
  * The phone number we are sending everything from
 **/
+import * as fs from "fs";
+
 export const RCTBackCOVID19PhoneNumber: string = '+15407010519';
 /**
  * @method
@@ -92,4 +94,34 @@ export function stringFromList(inputList: string[], delim: string): string {
     }
   }
   return returnString;
+}
+/**
+ * @method
+ * @description
+ * Saves an object locally as a json file
+ * @param data {any} object we are saving
+ * @param path {string} path we want to save the object to
+ * @return {void}
+**/
+export function storeDataAsJSON(data: any, path: string): void {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data));
+  } catch (err) {
+    console.error(err);
+  }
+}
+/**
+ * @method
+ * @description
+ * Loads data from json file, parses it into object
+ * @param path {string} path we are pulling from
+ * @return {any} object parsed from JSON file
+**/
+export function loadJSONData(path: string): any {
+  try {
+    return JSON.parse(fs.readFileSync(path, 'utf8'));
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
 }

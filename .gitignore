@@ -12,6 +12,9 @@
 # huge data files
 .datafile.ts
 
+# any user data files
+/data
+
 # IDEs and editors
 /.idea
 .project
